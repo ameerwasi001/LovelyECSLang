@@ -1,0 +1,36 @@
+include "src.modules.love" as loveMain
+
+module love
+
+$loops <- #{}
+$active_loops <- #{}
+
+active_state{st} => {
+    $active_states[st] <- true
+}
+
+deactive_state{st} => {
+    $active_loops[st] <- nil
+}
+
+toggle_state{st} => {
+    if $active_loops[st] {
+        $active_loops[st] <- nil
+    } else {
+        $active_loops[st] <- true
+    }
+}
+
+$load <- loveMain.load
+
+draw{} => {
+    for active_state <- $active_loops {
+        love["draw_" .. active_state]{}
+    }
+}
+
+update{dt} => {
+    for active_state <- $active_loops {
+        love["update_" .. active_state]{dt}
+    }
+}
